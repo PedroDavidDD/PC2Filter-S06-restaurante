@@ -152,31 +152,22 @@ class MainActivity : AppCompatActivity() {
             plato.nombre!!.lowercase().contains(queryText)
         }
 
-        val isNumeric: Boolean = try {
-            queryText.toDouble()
-            true // Si se puede convertir a número, entonces es numérico
-        } catch (e: NumberFormatException) {
-            false // No se pudo convertir, por lo tanto, es una cadena
-        }
-
-        if (isNumeric) {
-            // numérico
-            when (typeFilterMain) {
-                typeFilters.precio.toString() -> {
-                    filteredList =  PlatoProvider.platosList.filter { plato ->
-                        plato.precio >= queryText.toDouble()
-                    }
-                }
-                typeFilters.rating.toString() -> {
-                    filteredList =  PlatoProvider.platosList.filter { plato ->
-                        plato.rating == queryText.toFloat()
-                    }
+        // numérico
+        when (typeFilterMain) {
+            typeFilters.precio.toString() -> {
+                filteredList =  PlatoProvider.platosList.filter { plato ->
+                    plato.precio.toString().substringBefore(".") == queryText.substringBefore(".")
                 }
             }
-        } else {
-            // cadena
-            val filteredList = PlatoProvider.platosList.filter { plato ->
-                plato.nombre!!.lowercase().contains(queryText)
+            typeFilters.rating.toString() -> {
+                filteredList =  PlatoProvider.platosList.filter { plato ->
+                    plato.rating.toString().substringBefore(".") == queryText.substringBefore(".")
+                }
+            }
+            typeFilters.rating.toString() -> {
+                filteredList = PlatoProvider.platosList.filter { plato ->
+                    plato.nombre!!.lowercase().contains(queryText)
+                }
             }
         }
         //[Encontró algo?]
