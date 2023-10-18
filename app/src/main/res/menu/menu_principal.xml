@@ -19,7 +19,7 @@
     <item
         android:id="@+id/item_new"
         android:icon="@android:drawable/ic_menu_add"
-        android:title="Agregar  Platos"
+        android:title="Agregar Platos"
         app:showAsAction="collapseActionView"
         />
 

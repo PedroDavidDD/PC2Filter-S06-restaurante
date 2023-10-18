@@ -120,10 +120,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
-            R.id.action_search -> {
-                Toast.makeText(this, "action_search", Toast.LENGTH_SHORT).show()
-                true
-            }
             R.id.item_list -> {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
@@ -140,44 +136,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun filterData(query: String? = "", typeFilterMain: String? = typeFilters.nombre.toString()) {
-        val queryText = query.toString().trim().lowercase()
-        // Verificar si el query es nulo o muy corto
-        /*if (queryText.isEmpty() || queryText.length < 3) {
-            // No se hace nada si el query es nulo o muy corto
-            Toast.makeText(this,"Mínimo 3 caracteres",Toast.LENGTH_SHORT).show()
+        val queryText = query?.trim()?.lowercase()
+
+        if (queryText.isNullOrEmpty()) {
+            setFilterPlatoList(PlatoProvider.platosListNodata)
             return
-        }*/
-        // Filtra la lista de libros por título
-        var filteredList = PlatoProvider.platosList.filter { plato ->
-            plato.nombre!!.lowercase().contains(queryText)
         }
 
-        // numérico
-        when (typeFilterMain) {
-            typeFilters.precio.toString() -> {
-                filteredList =  PlatoProvider.platosList.filter { plato ->
-                    plato.precio.toString().substringBefore(".") == queryText.substringBefore(".")
+        val filteredList = PlatoProvider.platosList.filter { plato ->
+            when (typeFilterMain) {
+                typeFilters.precio.toString() -> {
+                    plato.precio.toString().startsWith(queryText)
                 }
-            }
-            typeFilters.rating.toString() -> {
-                filteredList =  PlatoProvider.platosList.filter { plato ->
-                    plato.rating.toString().substringBefore(".") == queryText.substringBefore(".")
+                typeFilters.rating.toString() -> {
+                    val queryRating = queryText.toIntOrNull()
+                    queryRating != null && plato.rating.toInt() == queryRating
                 }
-            }
-            typeFilters.rating.toString() -> {
-                filteredList = PlatoProvider.platosList.filter { plato ->
-                    plato.nombre!!.lowercase().contains(queryText)
-                }
+                else -> plato.nombre?.lowercase()?.contains(queryText) == true
             }
         }
-        //[Encontró algo?]
-        if (filteredList.isEmpty()) {
-            // Si filteredList está vacío, avisa que no existe la coincidencia
-            setFilterPlatoList(PlatoProvider.platosListNodata)
-        } else {
-            // Si filteredList no está vacío, establece la lista filtrada
-            setFilterPlatoList(filteredList.toMutableList())
-        }
+//        Log.d("tage",filteredList.toString())
+        setFilterPlatoList(if (filteredList.isEmpty()) PlatoProvider.platosListNodata else filteredList.toMutableList())
     }
 
     fun setFilterPlatoList(bookList: MutableList<Platos>) {
